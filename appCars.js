@@ -100,7 +100,7 @@ app.get("/fetch-cars", async (req, res) => {
 
     if (carsToInsert.length > 0) {
       const cars = await Car.insertMany(carsToInsert);
-      console.log("Datos guardados en MongoDB:", cars);
+      console.log("Nuevos datos guardados en MongoDB:", cars);
       res.json(cars);
     } else {
       console.log("No hay nuevos datos para insertar en MongoDB");
