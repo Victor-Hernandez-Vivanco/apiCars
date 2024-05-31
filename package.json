@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node ./app.js",
     "dev": "nodemon ./app.js",
+    "start:api": "node ./appCars.js",
+    "dev:api": "nodemon ./appCars",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

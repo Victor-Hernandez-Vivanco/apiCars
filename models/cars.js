@@ -57,7 +57,7 @@ const carsSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // registra la fecha de creación y actualización
+    timestamps: true,
     versionKey: false,
   }
 );
