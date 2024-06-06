@@ -4,8 +4,7 @@ const crypto = require("crypto");
 
 const getCars = async (req, res) => {
   try {
-    const data = await carsModel.find(); // Aquí debe ser "find()" sin argumentos
-    console.log("Vehículos de Mongo -->", data);
+    const data = await carsModel.find();
     res.send({ data });
   } catch (error) {
     console.log("ERROR_GET_CARS -->", error);
@@ -16,8 +15,7 @@ const getCars = async (req, res) => {
 const getCar = async (req, res) => {
   try {
     const { id } = req.params;
-    const carId = await carsModel.findById(id); // Aquí debe ser "find()" sin argumentos
-    console.log("Vehículos de Mongo -->", carId);
+    const carId = await carsModel.findById(id);
     res.send({ carId });
   } catch (error) {
     console.log("ERROR_GET_CAR_ID -->", error);
@@ -53,11 +51,9 @@ const updateCar = async (req, res) => {
     const carUp = await carsModel.findByIdAndUpdate(id, req.body, {
       new: true,
     });
-    console.log("Vehículos de Mongo -->", carUp);
     res.send({ carUp });
   } catch (error) {
-    console.log("ERROR_GET_CAR_ID -->", error);
-    handleHttpError(res, "ERROR_GET_CAR_ID", error);
+    handleHttpError(res, "ERROR_UPDATE_CAR_ID", error);
   }
 };
 
@@ -65,18 +61,15 @@ const deleteCar = async (req, res) => {
   try {
     const { id } = req.params;
     await carsModel.findByIdAndDelete(id);
-    console.log("Vehículo Id eliminado de Mongo --> ID:", id);
     res.status(201).send(`Car deleted --> ${id}`);
   } catch (error) {
-    console.log("ERROR_GET_CAR_ID -->", error);
-    handleHttpError(res, "ERROR_GET_CAR_ID", error);
+    handleHttpError(res, "ERROR_DELETE_CAR", error);
   }
 };
 
 const deleteAllCars = async (req, res) => {
   try {
     await carsModel.deleteMany({});
-    console.log("All Cars Deleted");
     res.send({ message: "All vehicles deleted" });
   } catch (error) {
     console.log("ERROR_DELETE_ALL_CARS -->", error);

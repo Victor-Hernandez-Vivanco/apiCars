@@ -55,6 +55,9 @@ const carsSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
+    mediaId: {
+      type: mongoose.Types.ObjectId,
+    },
   },
   {
     timestamps: true,
