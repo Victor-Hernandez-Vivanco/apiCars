@@ -7,7 +7,6 @@ const getCars = async (req, res) => {
   try {
     const response = await axios.get(process.env.API_URL);
     const data = response.data;
-    console.log("Esta es la data de la api -->", data);
 
     const carsToInsert = [];
 
@@ -30,7 +29,6 @@ const getCars = async (req, res) => {
 
     if (carsToInsert.length > 0) {
       const cars = await Car.insertMany(carsToInsert);
-      console.log("Nuevos datos guardados en MongoDB:", cars);
       res.json(cars);
     } else {
       console.log("No hay nuevos datos para insertar en MongoDB");
