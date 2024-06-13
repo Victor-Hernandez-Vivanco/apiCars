@@ -4,8 +4,9 @@ const crypto = require("crypto");
 
 const getCars = async (req, res) => {
   try {
+    const user = req.user;
     const data = await carsModel.find();
-    res.send({ data });
+    res.send({ user, data });
   } catch (error) {
     console.log("ERROR_GET_CARS -->", error);
     handleHttpError(res, "ERROR_GET_CARS", error);
@@ -14,18 +15,43 @@ const getCars = async (req, res) => {
 
 const getCar = async (req, res) => {
   try {
+    const user = req.user;
     const { id } = req.params;
     const carId = await carsModel.findById(id);
-    res.send({ carId });
+    res.send({ user, carId });
   } catch (error) {
-    console.log("ERROR_GET_CAR_ID -->", error);
     handleHttpError(res, "ERROR_GET_CAR_ID", error);
   }
 };
 
-const createCars = async (req, res) => {
+const createCar = async (req, res) => {
   try {
+    const user = req.user;
     const carData = req.body;
+
+    // Verificar que todos los campos requeridos están presentes
+    const requiredFields = [
+      "make",
+      "model",
+      "year",
+      "color",
+      "mileage",
+      "price",
+      "fuelType",
+      "transmission",
+      "engine",
+      "horsepower",
+      "features",
+      "owners",
+    ];
+
+    for (const field of requiredFields) {
+      if (!carData[field]) {
+        return res
+          .status(400)
+          .send({ error: `Missing required field: ${field}` });
+      }
+    }
 
     // Crear una clave única basada en los atributos del vehículo
     const uniqueKey = crypto
@@ -38,20 +64,28 @@ const createCars = async (req, res) => {
     carData.uniqueKey = uniqueKey;
 
     const newCar = await carsModel.create(carData);
-    res.status(201).send(newCar);
+    res.status(201).send({ user, newCar });
   } catch (error) {
-    console.log("ERROR_CREATE_CAR -->", error);
-    handleHttpError(res, "ERROR_CREATE_CAR", 500);
+    console.error("ERROR_CREATE_CAR -->", error);
+
+    if (error.code === 11000) {
+      return res
+        .status(409)
+        .send({ error: "Duplicate entry. This car already exists." });
+    } else {
+      return handleHttpError(res, "ERROR_CREATE_CAR", 500);
+    }
   }
 };
 
 const updateCar = async (req, res) => {
   try {
+    const user = req.user;
     const { id } = req.params;
     const carUp = await carsModel.findByIdAndUpdate(id, req.body, {
       new: true,
     });
-    res.send({ carUp });
+    res.send({ user, carUp });
   } catch (error) {
     handleHttpError(res, "ERROR_UPDATE_CAR_ID", error);
   }
@@ -59,9 +93,14 @@ const updateCar = async (req, res) => {
 
 const deleteCar = async (req, res) => {
   try {
+    const user = req.user;
     const { id } = req.params;
-    await carsModel.findByIdAndDelete(id);
-    res.status(201).send(`Car deleted --> ${id}`);
+    const datafile = await carsModel.findById(id);
+    await carsModel.delete({ _id: id });
+    if (!datafile) {
+      return res.status(404).send({ message: "Car not found" });
+    }
+    res.status(200).send({ user, message: `Car deleted --> ${id}`, datafile });
   } catch (error) {
     handleHttpError(res, "ERROR_DELETE_CAR", error);
   }
@@ -69,10 +108,10 @@ const deleteCar = async (req, res) => {
 
 const deleteAllCars = async (req, res) => {
   try {
+    const user = req.user;
     await carsModel.deleteMany({});
-    res.send({ message: "All vehicles deleted" });
+    res.status(200).send({ user, message: "All vehicles deleted" });
   } catch (error) {
-    console.log("ERROR_DELETE_ALL_CARS -->", error);
     handleHttpError(res, "ERROR_DELETE_ALL_CARS", error);
   }
 };
@@ -80,7 +119,7 @@ const deleteAllCars = async (req, res) => {
 module.exports = {
   getCars,
   getCar,
-  createCars,
+  createCar,
   updateCar,
   deleteCar,
   deleteAllCars,

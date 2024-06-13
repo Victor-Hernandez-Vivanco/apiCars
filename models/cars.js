@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const SoftDeleteModel = require("mongoose-delete");
 
 const carsSchema = new mongoose.Schema(
   {
@@ -65,4 +66,5 @@ const carsSchema = new mongoose.Schema(
   }
 );
 
+carsSchema.plugin(SoftDeleteModel, { overrideMethods: "all" });
 module.exports = mongoose.model("cars", carsSchema);

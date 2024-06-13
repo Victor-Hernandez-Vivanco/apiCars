@@ -9,6 +9,7 @@ const MEDIA_PATH = `${__dirname}/../storage`;
 
 const createItem = async (req, res) => {
   try {
+    const user = req.user;
     const { file } = req;
     if (!file) {
       handleHttpError(res, "FILE_NOT_FOUND_STORAGE", 404);
@@ -21,7 +22,7 @@ const createItem = async (req, res) => {
     };
 
     const response = await storageModel.create(fileData);
-    res.send({ response });
+    res.send({ user, response });
   } catch (error) {
     console.error(error);
     handleHttpError(res, "ERROR_CREATE_ITEM_STORAGE");
@@ -31,8 +32,9 @@ const createItem = async (req, res) => {
 // obtine la lista de los registros
 const getItems = async (req, res) => {
   try {
+    const user = req.user;
     const data = await storageModel.find({});
-    res.send({ data });
+    res.send({ user, data });
   } catch (error) {
     handleHttpError(res, "ERROR_LIST_ITEMS_ STORAGE");
   }
@@ -41,9 +43,10 @@ const getItems = async (req, res) => {
 // obtener un registro por su id
 const getItem = async (req, res) => {
   try {
+    const user = req.user;
     const { id } = matchedData(req);
     const data = await storageModel.findById(id);
-    res.send({ data });
+    res.send({ user, data });
   } catch (error) {
     handleHttpError(res, "ERROR_DETAIL_ITEM_STORAGE");
   }
@@ -52,9 +55,13 @@ const getItem = async (req, res) => {
 // eliminar un registro por su id
 const deleteItem = async (req, res) => {
   try {
+    const user = req.user;
     const { id } = matchedData(req);
     const datafile = await storageModel.findById(id);
     await storageModel.delete({ _id: id });
+    if (!datafile) {
+      return res.status(404).send({ message: "Storage not found" });
+    }
     // await storageModel.deleteOne(id) es para eliminar de forma permanente un registro
     const { filename } = datafile;
     const filePath = `${MEDIA_PATH}/${filename}`;
@@ -64,7 +71,7 @@ const deleteItem = async (req, res) => {
       filePath,
       deleted: 1,
     };
-    res.send({ data });
+    res.send({ user, data });
   } catch (error) {
     handleHttpError(res, "ERROR_DELETE_ITEM_STORAGE");
   }
@@ -73,8 +80,9 @@ const deleteItem = async (req, res) => {
 // eliminar todos los registros
 const deleteAllItems = async (req, res) => {
   try {
+    const user = req.user;
     const result = await storageModel.deleteMany({});
-    res.send({ result });
+    res.send({ user, result });
   } catch (error) {
     handleHttpError(res, "ERROR_DELETE_ALL_ITEMS_STORAGE");
   }

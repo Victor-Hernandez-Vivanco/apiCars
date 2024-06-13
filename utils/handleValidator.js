@@ -6,7 +6,7 @@ const validateResults = (req, res, next) => {
     return next();
   } catch (error) {
     res.status(403);
-    console.log(error.array());
+    console.log("Error_Handlevalidator -->", error.array());
     res.send({ errors: error.array() });
   }
 };

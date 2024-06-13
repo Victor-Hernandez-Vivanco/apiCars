@@ -1,16 +1,9 @@
-require("dotenv").config();
-const express = require("express");
 const axios = require("axios");
 const crypto = require("crypto");
-const Car = require("./models/cars");
-const dbConnectMongo = require("./config/mongo");
+const path = require("path");
+const Car = require(path.resolve(__dirname, "../models/cars"));
 
-const app = express();
-const apiPort = process.env.API_PORT || 3001;
-
-app.use(express.json());
-
-app.get("/fetch-cars", async (req, res) => {
+const getCars = async (req, res) => {
   try {
     const response = await axios.get(process.env.API_URL);
     const data = response.data;
@@ -49,12 +42,6 @@ app.get("/fetch-cars", async (req, res) => {
       .status(500)
       .json({ message: "ERROR_GET_DATA_API", error: error.message });
   }
-});
+};
 
-app.listen(apiPort, () => {
-  console.log(
-    `Servicio de obtención de datos iniciado en http://localhost:${apiPort}`
-  );
-});
-
-dbConnectMongo();
+module.exports = getCars;

@@ -2,7 +2,6 @@ const { check } = require("express-validator");
 const validateResults = require("../utils/handleValidator");
 
 const validatorCreateCar = [
-  check("id").exists().notEmpty(),
   check("make").exists().notEmpty(),
   check("model").exists().notEmpty(),
   check("year").exists().notEmpty(),
@@ -15,7 +14,6 @@ const validatorCreateCar = [
   check("horsepower").exists().notEmpty(),
   check("features").exists().notEmpty(),
   check("owners").exists().notEmpty(),
-  check("uniqueKey").exists().notEmpty(),
   check("mediaId").exists().notEmpty(),
 
   (req, res, next) => {
